@@ -1,3 +1,12 @@
+import json
+import os
+
+if os.path.exists("db.json"):
+    with open("db.json", "r") as f:
+        user_data = json.load(f)
+else:
+    user_data = []
+
 # User object
 # Blue print for user object
 class User:
@@ -7,20 +16,20 @@ class User:
         self.username = username
         self.role = role
         self.password = password
-        self.users = []                  # An empty list to stor all users
 
     # A method to display all available users in the list
     # Added indexing to make the list more readable
     # The conditional statement checks if users exist or not inside the users list 
     def display_all_users(self):
         print("All Users: ")
-        if self.users:
+
+        if user_data:
             index = 0
-            for user in self.users:
+            for u in user_data:
                 index = index + 1
-                print(f"{index}. {user}")
-        else:
-            print("No users found. try to add one.")
+                print(f"{index}. {u}")
+        else: 
+            print("No users found. please add one!")
 
     # A method to add a new user to the list
     # The new user information is stored in a user_info dictionary and then added into the list
@@ -38,6 +47,11 @@ class User:
 
         self.users.append(user_info)
         print(f"User {username} added successfully!")
+        
+        user_data.append(user_info)
+
+        with open("db.json", "w") as f:
+            json.dump(user_data, f, indent=4)
 
         if role == 'admin':
             self.display_all_users()
@@ -46,8 +60,9 @@ class User:
     def update_user(self):
         print("Select user to update")
         user = input("Enter username here: ")
-        # Loop through the list to find the user to be updated
-        for u in self.users:
+
+        # Loop through the user data to find the user to be updated
+        for u in user_data:
             #It checks conditionally if the user exists in the list or not
             if u["username"] == user:
                 username = input("Update username: ")
@@ -68,10 +83,10 @@ class User:
         print("Remove user")
         username = input("Enter username: ")
         # it looks for the username provided
-        for u in self.users:
+        for u in user_data:
             # if found it will be removed
             if u["username"] == username:
-                self.users.remove(u)
+                user_data.remove(u) 
                 print(f"User {username} has been removed successfully!")
             # if not found, fallback to error message
             else:
@@ -82,7 +97,7 @@ class User:
     def display_user_info(self):
         print("Search user here")
         username = input("Enter username: ")
-        for u in self.users:
+        for u in user_data:
             if u["username"] == username:
                 print(f"{u}")
             else:

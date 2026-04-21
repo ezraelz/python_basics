@@ -1,11 +1,25 @@
 from model import User
 from management import user_management, flight_management
+import json
+import os
 
-user = User(username='', role='', password='')
-stored_user = user.users
+user = User(username='', role='' , password='')
+
+
+if os.path.exists("db.json"):
+    with open("db.json", "r") as f:
+        try:
+            stored_user = json.load(f)
+        except json.JSONDecodeError:
+            stored_user = []
+
+else:
+    stored_user = []
+
 
 def register():
     user.create_user()
+
 
 def login(username, password):
     username = input("Enter username: ")
@@ -28,8 +42,9 @@ def login(username, password):
                 break
             else:
                 print("Invalid option. please try again")
-        else:
-            print("Invalid credentials. Please provide the correct username and password to login!")
+        
+
 
 def logout():
     pass
+
