@@ -1,9 +1,12 @@
 import json
 import os
 
-if os.path.exists("db.json"):
-    with open("db.json", "r") as f:
-        user_data = json.load(f)
+if os.path.exists("db_users.json"):
+    try:
+        with open("db_users.json", "r") as f:
+            user_data = json.load(f)
+    except json.JSONDecodeError:
+        user_data = []
 else:
     user_data = []
 
@@ -50,7 +53,7 @@ class User:
         
         user_data.append(user_info)
 
-        with open("db.json", "w") as f:
+        with open("db_users.json", "w") as f:
             json.dump(user_data, f, indent=4)
 
         if role == 'admin':
@@ -73,6 +76,9 @@ class User:
                 u["role"] = role
                 u["password"] = password
 
+                with open("db_users.json", "w") as f:
+                    json.dump(user_data, f, indent=4)
+
                 print(f"User {user} updated successfully!")
             else:
                 # Fall back if the user not found
@@ -88,6 +94,8 @@ class User:
             if u["username"] == username:
                 user_data.remove(u) 
                 print(f"User {username} has been removed successfully!")
+                with open("db_users.json", "w") as f:
+                    json.dump(user_data, f, indent=4)
             # if not found, fallback to error message
             else:
                 print("User not found. Please try again!")
@@ -95,14 +103,25 @@ class User:
     # Based on the given username value this method tries to display  a user info
     # It is a simple search method
     def display_user_info(self):
+        if not user_data:
+            print("No users found!")
+
         print("Search user here")
         username = input("Enter username: ")
         for u in user_data:
             if u["username"] == username:
                 print(f"{u}")
-            else:
-                print("User not found. Please try again!")
+            
 
+
+if os.path.exists("db_flights.json"):
+    try:
+        with open("db_flights.json", "r") as f:
+            flight_data = json.load(f)
+    except json.JSONDecodeError:
+        flight_data = []
+else:
+    flight_data = []
 
 class Flight():
     def __init__(self, place, day, time, amount):
@@ -110,7 +129,6 @@ class Flight():
         self.day = day
         self.time = time
         self.amount = amount
-        self.flights = []
 
     def create_flights(self):
         flight_info = {}
@@ -127,22 +145,26 @@ class Flight():
         flight_info["Amount"] = amount
         
         flight = flight_info
-        self.flights.append(flight)
+        flight_data.append(flight)
+        with open("db_flights.json", "w") as f:
+            json.dump(flight_data, f, indent=4)
 
     def remove_flight_info(self):
         print("Remove flight info: ")
         fly = input("Enter Flight Place: ")
-        for f in self.flights:
+        for f in flight_data:
             if f["Place"] == fly:
-                self.flights.remove(f)
-                print("remove successfully!")
+                flight_data.remove(f)
+                print(f"Flight {f} has been removed successfully!")
+            with open("db_flights.json", "w") as f:
+                json.dump(flight_data, f, indent=4)
 
     def display_flight_info(self):
         print(f"\nToday's flights: ")
-        if not self.flights:
+        if not flight_data:
             return "No flights schedules found!"
         index = 0
-        for flight in self.flights:
+        for flight in flight_data:
             index = index + 1
             print(f"{index}. {flight}")
             

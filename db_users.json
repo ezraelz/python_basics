@@ -11,12 +11,7 @@
     },
     {
         "username": "test",
-        "role": "user",
-        "password": "user"
-    },
-    {
-        "username": "test2",
-        "role": "user",
-        "password": "user"
+        "role": "hr",
+        "password": "hr"
     }
 ]

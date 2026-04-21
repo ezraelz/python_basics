@@ -6,8 +6,8 @@ import os
 user = User(username='', role='' , password='')
 
 
-if os.path.exists("db.json"):
-    with open("db.json", "r") as f:
+if os.path.exists("db_users.json"):
+    with open("db_users.json", "r") as f:
         try:
             stored_user = json.load(f)
         except json.JSONDecodeError:
