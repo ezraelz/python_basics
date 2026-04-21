@@ -35,7 +35,7 @@ class User:
 
     def remove_user(self):
         print("Remove user")
-        username = input("Enter username")
+        username = input("Enter username: ")
         for u in self.users:
             if u["username"] == username:
                 self.users.remove(u)
@@ -43,18 +43,17 @@ class User:
 
     def display_user_info(self):
         print("Search user here")
-        username = input("Enter username")
+        username = input("Enter username: ")
         for u in self.users:
             if u["username"] == username:
-                for user in u:
-                    print(f"{user}")
+                print(f"{u}")
 
 
 class Main():
     users = User(username="", role="", password="")
     while True:
         print("Welcome back select what to do: ")
-        choices = int(input("1, Display all users \n2, Create new user \n3, Remove user info \n4, Exit: \n>> "))
+        choices = int(input("1. Display all users \n2. Create new user \n3. Remove user info \n4. Display user info \n5. Exit: \n>> "))
         if choices == 1:
             users.display_all_users()
         elif choices == 2:
@@ -62,6 +61,8 @@ class Main():
         elif choices == 3:
             users.remove_user()
         elif choices == 4:
+            users.display_user_info()
+        elif choices == 5:
             print("Good bye!")
             break
         else:
