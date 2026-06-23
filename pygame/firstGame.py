@@ -20,71 +20,115 @@ char = load_img('Game/standing.png')
 clock = pyg.time.Clock()
 
 screenWidth = 500
-x = 50
-y = 400
-width = 40
-height = 60
-vel = 10
 
-isJump = False
-jumpCount = 10
-left = False
-right = False
-walkCount = 0
+class Player:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.vel = 5
+        self.isJump = False
+        self.jumpCount = 10
+        self.left = False
+        self.right = False
+        self.walkCount = 0
+        self.standing = True
+
+    def draw(self,win):
+        if self.walkCount + 1 >= 27:
+            self.walkCount = 0
+
+        if not(self.standing):
+            if self.left:
+                win.blit(walkLeft[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+            elif self.right:
+                win.blit(walkRight[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+        else:
+            if self.right:
+                win.blit(walkRight[0], (self.x, self.y))
+            else: 
+                win.blit(walkLeft[0], (self.x, self.y))
+
+class projectile(object):
+    def __init__(self, x, y, radius, color, facing):
+        self.x = x
+        self.y = y 
+        self.radius = radius
+        self.color = color
+        self.facing = facing
+        self.vel = 8 * facing
+
+    def draw(self, win):
+        pyg.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 def redrawGameWindow():
     global walkCount
 
     win.blit(bg, (0, 0))
+    man.draw(win)
 
-    if walkCount + 1 >= 27:
-        walkCount = 0
-    if left:
-        win.blit(walkLeft[walkCount//3], (x, y))
-        walkCount += 1
-    elif right:
-        win.blit(walkRight[walkCount//3], (x, y))
-        walkCount += 1
-    else:
-        win.blit(char, (x, y))
+    for bullet in bullets:
+        bullet.draw(win)
+        
     pyg.display.update()
 
+#main loop
+man = Player(300, 410, 64, 64)
 running = True
+bullets = []
 while running:
     clock.tick(27)
     for event in pyg.event.get():
         if event.type == pyg.QUIT:
             running = False
 
+    for bullet in bullets:
+        if bullet.x < 500 and bullet.x > 0:
+            bullet.x += bullet.vel
+        else:
+            bullets.pop(bullets.index(bullet))
+
     keys = pyg.key.get_pressed()
-    if keys[pyg.K_LEFT] and x > vel:
-        x -= vel
-        left = True
-        right = False
-    elif keys[pyg.K_RIGHT] and x < screenWidth - width - vel:
-        x += vel
-        left = False
-        right = True
+
+    if keys[pyg.K_SPACE]:
+        if man.left:
+            facing = -1
+        else:
+            facing = 1
+        if len(bullets) < 5:
+            bullets.append(projectile(round(man.x + man.width//2), round(man.y + man.height//2), 6, (0,0,0), facing))
+        
+    if keys[pyg.K_LEFT] and man.x > man.vel:
+        man.x -= man.vel
+        man.left = True
+        man.right = False
+        man.standing = False
+    elif keys[pyg.K_RIGHT] and man.x < screenWidth - man.width - man.vel:
+        man.x += man.vel
+        man.left = False
+        man.right = True
+        man.standing = False
     else:
-        right = False
-        left = False
-        walkCount = 0
-    if not isJump:
-        if keys[pyg.K_SPACE]:
-            isJump = True
-            right = False
-            left = False
-            walkCount = 0
+        man.standing = True
+        man.walkCount = 0
+    if not man.isJump:
+        if keys[pyg.K_UP]:
+            man.isJump = True
+            
+            man.walkCount = 0
     else:
-        if jumpCount >= -10:
+        if man.jumpCount >= -10:
             neg = 1
-            if jumpCount < 0:
+            if man.jumpCount < 0:
                 neg = -1
-            y -= (jumpCount ** 2) * 0.5 * neg
-            jumpCount -= 1
+            man.y -= (man.jumpCount ** 2) * 0.5 * neg
+            man.jumpCount -= 1
         else: 
-            isJump = False
-            jumpCount = 10
+            man.isJump = False
+            man.jumpCount = 10
     
     redrawGameWindow()
 
